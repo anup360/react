@@ -36,7 +36,7 @@ const Table = ({
                     
                   >
                   
-                   { !!col && col?.map((item,index)=>DisplayDropFields(item,index,handleDeleteField,handleFieldSetting,rowIndex,colIndex)) }
+                   { !!col && col?.map((item,index)=>DisplayDropFields(item,index,handleFieldSetting,handleDeleteField,rowIndex,colIndex)) }
                   &nbsp;&nbsp;&nbsp;&nbsp;
                     { (!!col === false || col?.length === 0) && <div
                       style={{

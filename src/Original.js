@@ -596,7 +596,27 @@ useEffect(()=>{
           ))}
         </div>
     </div>
-    
+
+    <div>
+      <div key={field.id}>
+      
+              <div key={field.id} className="form-field position-relative my-2">
+                {displayValues(field)}
+                <div className="position-absolute top-0 end-0">
+                
+                <button className="p-0 mx-1 btn btn-outline-danger" onClick={() => handleDeleteField(field.id,colIndex,rowIndex)}>
+                <span className="k-icon k-i-delete"></span>
+                  {/* <i className="fas fa-close" title="delete field"></i> */}
+                </button>
+                
+                <button className="p-0 mx-1 btn btn-outline-primary" onClick={() => handleFieldSetting(field.id,colIndex,rowIndex)}><span className="k-icon k-i-edit"></span>
+                {/* <i className="fas fa-edit" title="edit field"></i> */}
+                </button>
+                </div>
+              </div>
+  
+            </div>
+    </div>
     <div className={formFields?.length > 0?"col":"col d-none"}>
     <div className="form-config" style={{border:"5px solid #ffffff",backgroundColor:"#f1f1f1"}}>
         <h3 className="fw-bold mb-0 fs-4 text-muted">Fields Setting</h3>

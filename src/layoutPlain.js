@@ -1,5 +1,5 @@
 
-const PlainLayout = (formFields,handleDrop,handleDragOver,displayDropFields)=>{
+const PlainLayout = ({formFields,handleDrop,handleDragOver,displayDropFields,handleFieldSetting,handleDeleteField})=>{
 
    return <div className={formFields?.length > 0?"col-8":"col-10"}>
     <div
@@ -11,7 +11,7 @@ const PlainLayout = (formFields,handleDrop,handleDragOver,displayDropFields)=>{
           <h3 className="fw-bold mb-0 fs-4 text-muted">Form <button onClick={()=>{}} className="btn blue-primary preview-dt btn-sm">Preview</button></h3>
         
           {formFields.map((field,index) => (
-            displayDropFields(field,index)
+            displayDropFields(field,index,handleFieldSetting,handleDeleteField)
           ))}
         </div>
     </div>

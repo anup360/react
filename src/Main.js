@@ -1,19 +1,19 @@
-import { Tooltip } from "@progress/kendo-react-tooltip";
 import React, { useEffect, useState } from "react";
-import TextEditor from "./TextEditor";
 import DisplayDropFields from "./DisplayDropFields";
-import addFormData from "./returnMergedData";
-import fields from "./fields";
+import TextEditor from "./TextEditor";
+import PlainLayout from "./layoutPlain";
 import Table from "./layoutTable";
+import addFormData from "./returnMergedData";
 
-const AddDocumentTemplateByDnD = () => {
-  const [rows, setRows] = useState([]);
-  const [formFields, setFormFields] = useState([]);
-  const [fieldId,setFieldId] = useState(null);
-  const [selectedField, setSelectedField] = useState(null);
-  const [inputMaster,setInputMaster] = useState("");
-  const [fieldSetting,setFieldSetting] = useState(null);
-  const [properties,setProperties] = useState({
+const Main = ({template})=>{
+
+	const [formFields, setFormFields] = useState([]);
+	const [fieldId,setFieldId] = useState(null);
+	const [inputMaster,setInputMaster] = useState("");
+	const [fieldSetting,setFieldSetting] = useState(null);
+	const [rows, setRows] = useState([]);
+	const [selectedField, setSelectedField] = useState(null);
+	const [properties,setProperties] = useState({
     htmlAttributePropertyName:"",
     displayLabel:"",
     htmlControlType:"",
@@ -30,6 +30,92 @@ const AddDocumentTemplateByDnD = () => {
     hint:""
   });
 
+	const fields = [
+    { type: 'paragraph', label: 'Paragraph',properties:{
+      htmlAttributePropertyName:"",htmlControlType:"",divideInColumns:"",textHtml:"",hint:""
+    }  },
+    { type: 'textBox', label: 'Text Box',properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",minCharacters:"",maxCharacters:"",sequenceNumber:"",isRequired:"",isHeader:"",textOrPlaceholder:"",htmlControlHasMasterData:"",hint:""
+    } },
+    { type: 'textArea', label: 'Text Area',properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",minCharacters:"",maxCharacters:"",sequenceNumber:"",isRequired:"",isHeader:"",textHtml:"",htmlControlHasMasterData:"",hint:""
+    } },
+    { type: 'radio', label: 'Radio Button',properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isRequired:"",isHeader:"",htmlControlHasMasterData:true,
+      htmlControlMasterData:null,
+      hint:""
+    } },
+    { type: 'checkbox', label: 'Checkbox',properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isRequired:"",isHeader:"",
+      htmlControlHasMasterData:true,
+      htmlControlMasterData:null,
+      hint:""
+    } },
+    { type: 'dropDown', label: "Drop Down List",properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isHeader:"",htmlControlHasMasterData:true,
+      htmlControlMasterData:null,
+      hint:""
+    }},
+    { type: 'signLine', label: "Signature Line",properties:{
+      htmlAttributePropertyName:"",htmlControlType:"",divideInColumns:"",isHeader:"",
+    }},
+    { type: 'datePicker', label: "Date Picker",properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isRequired:"",isHeader:"",hint:""
+    }},
+    { type: 'timePicker', label: "Time Picker",properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isRequired:"",isHeader:"",htmlControlHasMasterData:"",hint:""
+    }},
+    { type: 'textEditor', label: "Text Editor",properties:{
+      htmlAttributePropertyName:"",displayLabel:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isHeader:"",textHtml:"",hint:""
+    }},
+    { type: 'heading', label: "Heading",properties:{
+      htmlAttributePropertyName:"",htmlControlType:"",divideInColumns:"",sequenceNumber:"",isHeader:"",textHtml:"",hint:""
+    }},
+    
+  ];
+	const handleDragStart = (e, field) => {
+    e.dataTransfer.setData('text/plain', field.type);
+    setSelectedField(field);
+  };
+	const handleDrop = (e) => {
+    e.preventDefault();
+
+    const rowindex = e.currentTarget.getAttribute("data-rowindex");
+    const colindex = e.currentTarget.getAttribute("data-colindex");
+
+    const fieldType = e.dataTransfer.getData('text');
+    let prop = fields.filter(fld => fld.type === fieldType);
+    
+    const newField = { type: fieldType, id: Date.now(), properties:prop[0]?.properties};
+    
+    newField.properties.htmlAttributePropertyName = `${fieldType}${formFields.length}`;
+
+    if(template.templateLayout === 'table'){
+    rows[rowindex][colindex] = [...rows[rowindex][colindex],newField];
+    
+    setRows([...rows]);
+    const formField = addFormData(rows)?.flat()?.flat()?.filter(item=>item !== null);
+    
+    setFormFields(formField);
+    setFieldId(newField.id);
+	}else{
+		setFormFields([...formFields,newField]);
+    
+    	setFieldId(newField.id);
+	}
+    
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleRemoveCol = (rowIndex,colIndex) => {
+    const updatedRow = rows[rowIndex].filter((col,indx)=>indx!==colIndex);
+    rows[rowIndex] = updatedRow;
+    setRows([...rows]);
+  };
+
   const handleAddRow = () => {
     
     const newRow = [];
@@ -41,29 +127,20 @@ const AddDocumentTemplateByDnD = () => {
      setRows(updatedRow);
   };
 
-  const handleRemoveCol = (rowIndex,colIndex) => {
-    const updatedRow = rows[rowIndex].filter((col,indx)=>indx!==colIndex);
-    rows[rowIndex] = updatedRow;
-    setRows([...rows]);
-  };
 
-  const handleDeleteField = (id,rowIndex=null,colIndex=null) => {
-    const updatedFields = formFields.filter((field) => field.id !== id);
-    setFormFields(()=>updatedFields.map((item,index)=>{
-      item.properties.htmlAttributePropertyName = `${item.type}${index}`;
-      return item
-    }));
-    if(rows && rows[rowIndex][colIndex]){
-      rows[rowIndex][colIndex] = rows[rowIndex][colIndex].filter(item => item.id !== id); 
-      setRows(rows);
-    } 
-    
-  };
+  const handleAddColumn = (rowIndex) => {
+    const updatedRows = [...rows];
+    updatedRows[rowIndex] = [...updatedRows[rowIndex], ""];
+    setRows(updatedRows);
+  }; 
+
 
   const handleFieldSetting = (id) =>{
-    
-    let prop = formFields.filter(fld => fld.id === id);
 
+    if(id){
+
+    let prop = formFields.filter(fld => fld.id === id);
+    
     const fieldsProp = {
       htmlAttributePropertyName:"",
       displayLabel:"",
@@ -91,16 +168,12 @@ const AddDocumentTemplateByDnD = () => {
       setProperties(fieldsProp);
 
       return fieldsProp;
-    })    
+    })  
+
+    }  
       
   }
-
-  const handleAddColumn = (rowIndex) => {
-    const updatedRows = [...rows];
-    updatedRows[rowIndex] = [...updatedRows[rowIndex], ""];
-    setRows(updatedRows);
-  }; 
-  const delSelectedItem = (type,id,keyValue)=>{
+const delSelectedItem = (type,id,keyValue)=>{
   
     let updateFields = formFields.map((fld,index) => {
      
@@ -117,7 +190,8 @@ const AddDocumentTemplateByDnD = () => {
     
   setFormFields(updateFields);
   }
-  const showAddedMasterItems = (type,id)=>{
+
+const showAddedMasterItems = (type,id)=>{
     let items = null;
   formFields.map((fld) => {
       if(fld.id === parseInt(id)){
@@ -148,7 +222,6 @@ const AddDocumentTemplateByDnD = () => {
     
   setFormFields(updateFields);
   }
-  
   const showFieldsInput = (type,id)=>{
 
     if(type === "displayLabel"){
@@ -224,68 +297,51 @@ const handleFieldsValue = (e)=>{
   const type = e.target?.props?.customtype ?? e.target.getAttribute('customtype');
   const id = e.target?.props?.customid ?? e.target.getAttribute('customid');
 
-  
-  let updateFields = formFields.map((fld,index) => {
+   let updateFields = formFields.map((fld,index) => {
     
     
-    if(fld.id === parseInt(id)){
+     if(fld.id === parseInt(id)){
           
-      fld.properties[type] = type==="isRequired" ? e.target.checked : (e?.html ?? e.target?.value);  
-      setProperties(fld.properties);
+       fld.properties[type] = type==="isRequired" ? e.target.checked : (e?.html ?? e.target?.value);  
+       setProperties(fld.properties);
 
-    }
+     }
     
-    return fld;
-});
+     return fld;
+ });
 
 setFormFields(updateFields);
 
 }
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-
-    const rowindex = e.currentTarget.getAttribute("data-rowindex");
-    const colindex = e.currentTarget.getAttribute("data-colindex");
-
-    const fieldType = e.dataTransfer.getData('text');
-    let prop = fields.filter(fld => fld.type === fieldType);
+const handleDeleteField = (id,rowIndex=null,colIndex=null) => {
+	console.log("rowIndex=null,colIndex=null",rowIndex,colIndex)
+	if(id){
+    const updatedFields = formFields.filter((field) => field.id !== id);
+    setFormFields(()=>updatedFields.map((item,index)=>{
+      item.properties.htmlAttributePropertyName = `${item.type}${index}`;
+      return item
+    }));
+    if(rows && rows[rowIndex][colIndex]){
+      rows[rowIndex][colIndex] = rows[rowIndex][colIndex].filter(item => item.id !== id); 
+      setRows(rows);
+    } 
+	}
     
-    const newField = { type: fieldType, id: Date.now(), properties:prop[0]?.properties};
-    
-    newField.properties.htmlAttributePropertyName = `${fieldType}${formFields.length}`;
-    
-    rows[rowindex][colindex] = [...rows[rowindex][colindex],newField];
-    
-    setRows([...rows]);
-    const formField = addFormData(rows)?.flat()?.flat()?.filter(item=>item !== null);
-    
-    setFormFields(formField);
-    setFieldId(newField.id);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDragStart = (e, field) => {
-    e.dataTransfer.setData('text/plain', field.type);
-    setSelectedField(field);
-  };
-
-  useEffect(()=>{
+useEffect(()=>{
     if(fieldId){
       handleFieldSetting(fieldId);
     }
     
   },[fieldId]);
 
-  return (
-    
-    <div className="row">
+	return (
+		<div className="row">
         
-      <div className="col-2">
-    <div className="fields-panel" style={{border:"5px solid #ffffff",backgroundColor:"#f1f1f1"}}>
+      	<div className="col-2">
+    	<div className="fields-panel" style={{border:"5px solid #ffffff",backgroundColor:"#f1f1f1"}}>
           <h3 className="fw-bold mb-0 fs-4 text-muted">Fields</h3>
           {fields.map((field) => (
             <div
@@ -298,8 +354,9 @@ setFormFields(updateFields);
             </div>
           ))}
         </div>
-    </div>
-    
+    	</div>
+
+      { template.templateLayout === 'table' ?       
     <Table rows={rows}
     handleRemoveCol={handleRemoveCol}
     handleAddRow={handleAddRow}
@@ -310,19 +367,32 @@ setFormFields(updateFields);
     handleRemoveRow={handleRemoveRow}
     handleFieldSetting={handleFieldSetting}
     handleDeleteField={handleDeleteField} />
-    <div className={formFields?.length > 0?"col-2":"col d-none"}>
-    <div className="form-config" style={{border:"5px solid #ffffff",backgroundColor:"#f1f1f1"}}>
-        <h3 className="fw-bold mb-0 fs-4 text-muted">Fields Setting</h3>
-        { (formFields?.length && fieldSetting?.values?.length) && fieldSetting?.values.map((fs,index)=>(
-          <div key={index}>
-            {showFieldsInput(fs,fieldSetting?.id)}
-          </div>
-        ))}
-        </div>
-    </div>
+    :
+		<PlainLayout formFields={formFields}
+					    handleDrop={handleDrop}
+					    handleDragOver={handleDragOver}
+					    displayDropFields={DisplayDropFields} 
+					    handleDeleteField={handleDeleteField}
+					    handleFieldSetting={handleFieldSetting}
+					    />
+    	
+            }
 
-    </div>
-  );
-};
+			<div className={formFields?.length > 0?"col-2":"col d-none"}>
+			<div className="form-config" style={{border:"5px solid #ffffff",backgroundColor:"#f1f1f1"}}>
+				<h3 className="fw-bold mb-0 fs-4 text-muted">Fields Setting</h3>
+			{ (formFields?.length && fieldSetting?.values?.length) && fieldSetting?.values.map((fs,index)=>(
+			<div key={index}>
+			{showFieldsInput(fs,fieldSetting?.id)}
+			</div>
+			))}
+			</div>
+			</div>
 
-export default AddDocumentTemplateByDnD;
+
+
+    	</div>
+    	)
+}
+
+export default Main;

@@ -4,8 +4,7 @@ import React from "react";
 import RawHTML from "./RawHtml";
 import TextEditor from "./TextEditor";
 
-const DisplayDropFields = (field,index,handleDeleteField,handleFieldSetting,colIndex,rowIndex)=>{
-  
+const DisplayDropFields = (field,index,handleFieldSetting,handleDeleteField,rowIndex=null,colIndex=null)=>{
   if(!!field === false){
     return null;
   }
@@ -16,16 +15,16 @@ const DisplayDropFields = (field,index,handleDeleteField,handleFieldSetting,colI
                 {displayValues(field)}
                 <div className="position-absolute top-0 end-0">
                 
-                <button className="p-0 mx-1 btn btn-outline-danger" onClick={() => handleDeleteField(field.id,colIndex,rowIndex)}>
+                <button className="p-0 mx-1 btn btn-outline-danger" onClick={() => handleDeleteField(field.id,rowIndex,colIndex)}>
                 <span className="k-icon k-i-delete"></span>
                   {/* <i className="fas fa-close" title="delete field"></i> */}
                 </button>
                 
-                <button className="p-0 mx-1 btn btn-outline-primary" onClick={() => handleFieldSetting(field.id,colIndex,rowIndex)}><span className="k-icon k-i-edit"></span>
-                {/* <i className="fas fa-edit" title="edit field"></i> */}
-                </button>
-                </div>
-              </div>
+                <button className="p-0 mx-1 btn btn-outline-primary" onClick={
+                () => handleFieldSetting
+                (field.id,rowIndex=null,colIndex=null)}><span
+                className="k-icon k-i-edit"></span>{/* <i className="fas
+                fa-edit" title="edit field"></i> */} </button> </div> </div>
   
             </div>)
   }
@@ -191,7 +190,7 @@ const DisplayDropFields = (field,index,handleDeleteField,handleFieldSetting,colI
     }
   
     if(field.type === "heading"){
-  console.log("field.properties",field.properties)
+  
       return (
         <div style={{
           display: "flex",
