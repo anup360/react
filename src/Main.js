@@ -13,6 +13,7 @@ const Main = ({template})=>{
 	const [fieldSetting,setFieldSetting] = useState(null);
 	const [rows, setRows] = useState([]);
 	const [selectedField, setSelectedField] = useState(null);
+  const [showModal,setShowModal] = useState(false);
 	const [properties,setProperties] = useState({
     htmlAttributePropertyName:"",
     displayLabel:"",
@@ -322,7 +323,7 @@ const handleDeleteField = (id,rowIndex=null,colIndex=null) => {
       item.properties.htmlAttributePropertyName = `${item.type}${index}`;
       return item
     }));
-    if(rows && rows[rowIndex][colIndex]){
+    if(template.templateLayout === 'table' && rows && rows[rowIndex][colIndex]){
       rows[rowIndex][colIndex] = rows[rowIndex][colIndex].filter(item => item.id !== id); 
       setRows(rows);
     } 
@@ -357,7 +358,9 @@ useEffect(()=>{
     	</div>
 
       { template.templateLayout === 'table' ?       
-    <Table rows={rows}
+    <Table 
+    template={template}
+    rows={rows}
     handleRemoveCol={handleRemoveCol}
     handleAddRow={handleAddRow}
     handleDrop={handleDrop}
@@ -366,14 +369,22 @@ useEffect(()=>{
     handleAddColumn={handleAddColumn}
     handleRemoveRow={handleRemoveRow}
     handleFieldSetting={handleFieldSetting}
-    handleDeleteField={handleDeleteField} />
+    handleDeleteField={handleDeleteField}
+    showModal={showModal}
+    setShowModal={setShowModal}
+    formFields={formFields}
+    />
     :
-		<PlainLayout formFields={formFields}
-					    handleDrop={handleDrop}
-					    handleDragOver={handleDragOver}
-					    displayDropFields={DisplayDropFields} 
-					    handleDeleteField={handleDeleteField}
-					    handleFieldSetting={handleFieldSetting}
+		<PlainLayout 
+    template={template}
+    formFields={formFields}
+    handleDrop={handleDrop}
+    handleDragOver={handleDragOver}
+    displayDropFields={DisplayDropFields} 
+    handleDeleteField={handleDeleteField}
+    handleFieldSetting={handleFieldSetting}
+    showModal={showModal}
+    setShowModal={setShowModal}
 					    />
     	
             }

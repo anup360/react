@@ -14,17 +14,20 @@ const DisplayDropFields = (field,index,handleFieldSetting,handleDeleteField,rowI
               <div key={field.id} className="form-field position-relative my-2">
                 {displayValues(field)}
                 <div className="position-absolute top-0 end-0">
-                
+                { handleDeleteField &&
                 <button className="p-0 mx-1 btn btn-outline-danger" onClick={() => handleDeleteField(field.id,rowIndex,colIndex)}>
                 <span className="k-icon k-i-delete"></span>
                   {/* <i className="fas fa-close" title="delete field"></i> */}
                 </button>
-                
+                }
+                { handleFieldSetting &&
                 <button className="p-0 mx-1 btn btn-outline-primary" onClick={
                 () => handleFieldSetting
                 (field.id,rowIndex=null,colIndex=null)}><span
                 className="k-icon k-i-edit"></span>{/* <i className="fas
-                fa-edit" title="edit field"></i> */} </button> </div> </div>
+                fa-edit" title="edit field"></i> */} </button>
+              }
+                </div> </div>
   
             </div>)
   }
@@ -83,7 +86,7 @@ const DisplayDropFields = (field,index,handleFieldSetting,handleDeleteField,rowI
             </Tooltip>:field.properties['displayLabel']?field.properties['displayLabel']:field.type}
           </label>
   
-            {htmlControlMasterData?.length ? htmlControlMasterData.map(item=>(<>{<label key={item.keyIndex}><input type="radio" value={item.keyValue} /> { item.keyValue }</label>}</>)):<><label><input type="radio" value="Option 1"/> Option 1</label><label><input type="radio" value="Option 2"/> Option 2</label></>}
+            {htmlControlMasterData?.length ? htmlControlMasterData.map(item=>(<div key={item.keyIndex}>{<label key={item.keyIndex}><input type="radio" value={item.keyValue} /> { item.keyValue }</label>}</div>)):<><label><input type="radio" value="Option 1"/> Option 1</label><label><input type="radio" value="Option 2"/> Option 2</label></>}
         </div>
       )
     }
@@ -102,7 +105,7 @@ const DisplayDropFields = (field,index,handleFieldSetting,handleDeleteField,rowI
               <i className="fa fa-info-circle text-primary mx-1" aria-hidden="true" title={field.properties['hint']}>i</i>
             </Tooltip>:field.properties['displayLabel']?field.properties['displayLabel']:field.type}
           </label>
-            {htmlControlMasterData?.length ?htmlControlMasterData.map(item=>(<>{<label><input type="checkbox" value={item.keyValue} /> { item.keyValue }</label>}</>)):<><label><input type="checkbox" value="Option 1"/> Option 1</label><label><input type="checkbox" value="Option 2"/> Option 2</label></>}
+            {htmlControlMasterData?.length ?htmlControlMasterData.map(item=>(<div key={item.keyIndex}>{<label><input type="checkbox" value={item.keyValue} /> { item.keyValue }</label>}</div>)):<><label><input type="checkbox" value="Option 1"/> Option 1</label><label><input type="checkbox" value="Option 2"/> Option 2</label></>}
         </div>
       )
     }
@@ -123,7 +126,7 @@ const DisplayDropFields = (field,index,handleFieldSetting,handleDeleteField,rowI
           </label>
             <select className="form-control form-control-sm">
             <option>---Select---</option>
-            {htmlControlMasterData?.length ?htmlControlMasterData.map(item=>(<option>{ item.keyValue }</option>)):<><option>Option 1</option><option>Option 2</option></>}
+            {htmlControlMasterData?.length ?htmlControlMasterData.map(item=>(<option key={item.keyIndex}>{ item.keyValue }</option>)):<><option>Option 1</option><option>Option 2</option></>}
             </select>
         </div>
       )

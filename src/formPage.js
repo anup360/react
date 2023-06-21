@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Main from "./Main";
 
 
@@ -22,14 +22,19 @@ const FormPage = ()=>{
 		}
 		if(e.target.id === 'templateType'){
 			setTemplate({...template,templateType:e.target.value})
+			
 		}
 			
 	}
 
-	const handleSubmit = (e)=>{
+	const handleSubmit = ()=>{
 		const isEmpty = Object.values(template).some(x => x === null || x === '');
 		setIsEmpty(isEmpty);
 	}
+
+	useEffect(()=>{
+		handleSubmit()
+	},[template])
 	return (<>
 	{isEmpty?
 			<div className="container">
@@ -64,7 +69,7 @@ const FormPage = ()=>{
     </div>
     <div className="form-group">        
       <div className="col-sm-offset-2 col-sm-10">
-        <button className="btn btn-default" onClick={handleSubmit}>Create</button>
+        {/* <button className="btn btn-default" onClick={handleSubmit}>Create</button> */}
       </div>
     </div>
   

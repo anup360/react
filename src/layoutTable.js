@@ -1,6 +1,7 @@
-
+import Preview from "./Preview";
 
 const Table = ({
+    template,
     rows,
     handleRemoveCol,
     handleAddRow,
@@ -10,16 +11,20 @@ const Table = ({
     handleAddColumn,
     handleRemoveRow,
     handleFieldSetting,
-    handleDeleteField
+    handleDeleteField,
+    showModal,
+    setShowModal,
+    formFields
 })=>{
 
     return <div className="col-8">
-        {console.log("!!rows",rows,!!rows)}
+    <h3>{template.templateName}</h3>     
     <button onClick={handleAddRow}>Add Row</button>
+    <button onClick={()=>{setShowModal(true)}} className="btn blue-primary preview-dt btn-sm">Preview</button>
     <table width="100%">
       <tbody>
         {!!rows?.length && rows?.map((row, rowIndex) => (
-          <tr key={rowIndex}>
+          <tr key={rowIndex} style={{outline: "thin solid"}}>
             {row.map((col, colIndex) => (
               <td key={colIndex} valign="top">
                 
@@ -61,6 +66,7 @@ const Table = ({
         ))}
       </tbody>
     </table>
+    <Preview showModal={showModal} setShowModal={setShowModal} formFields={formFields} displayDropFields={DisplayDropFields} type={'table'} />
   </div>
 } 
 
