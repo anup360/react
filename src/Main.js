@@ -115,6 +115,9 @@ const Main = ({template})=>{
     const updatedRow = rows[rowIndex].filter((col,indx)=>indx!==colIndex);
     rows[rowIndex] = updatedRow;
     setRows([...rows]);
+    const formField = addFormData(rows)?.flat()?.flat()?.filter(item=>item !== null);
+    
+    setFormFields(formField);
   };
 
   const handleAddRow = () => {
